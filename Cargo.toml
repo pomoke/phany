@@ -1,0 +1,14 @@
+[package]
+name = "phany"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0.86"
+arboard = "3.4.0"
+clap = { version = "4.5.9", features = ["derive"] }
+dirs = "5.0.1"
+iced = { version = "0.12.1", features = ["image", "canvas", "tokio"] }
+iced_aw = "0.9.3"
+serde = { version = "1.0.204", features = ["derive"] }
+thiserror = "1.0.61"
