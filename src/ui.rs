@@ -65,7 +65,7 @@ impl Application for ViewerUI {
         let name = Path::new(&file);
         let filename = name.file_name().map_or("", |x| x.to_str().unwrap_or("?"));
 
-        let mut s = Self {
+        let s = Self {
             scale: 1.,
             filename: Some(filename.to_owned()),
             ..Default::default()
@@ -116,7 +116,7 @@ impl Application for ViewerUI {
             let viewer = viewer
                 .width(Length::Fill)
                 .height(Length::Fill)
-                .min_scale(0.5)
+                .min_scale(0.1)
                 .max_scale(20.)
                 .on_scale(|x| ViewerEvents::Scale(x))
                 .on_move(|x| ViewerEvents::Move(x));
@@ -131,7 +131,7 @@ impl Application for ViewerUI {
             );
             window = window.push(Space::new(Length::Fill, Length::Fill));
         }
-        let mut toolbar = row![
+        let toolbar = row![
             button(
                 text(Bootstrap::Info.to_string())
                     .size(24)

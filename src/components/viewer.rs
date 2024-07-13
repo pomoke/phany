@@ -1,6 +1,7 @@
 //! Zoom and pan on an image.
 //! This widget is based on iced.
 
+use iced::advanced::graphics::futures::backend::default;
 use iced::advanced::image::{self, FilterMethod};
 use iced::advanced::layout;
 use iced::advanced::mouse;
@@ -36,8 +37,8 @@ impl<Handle, Message> Viewer<Handle, Message> {
             padding: 0.0,
             width: Length::Shrink,
             height: Length::Shrink,
-            min_scale: 0.25,
-            max_scale: 16.0,
+            min_scale: 0.1,
+            max_scale: 8.0,
             scale_step: 0.10,
             filter_method: image::FilterMethod::default(),
             move_handler: None,
@@ -286,13 +287,19 @@ where
                     let delta = position - origin;
 
                     let x = if bounds.width < image_size.width {
-                        (state.starting_offset.x - delta.x).clamp(-hidden_width, hidden_width)
+                        (state.starting_offset.x - delta.x).clamp(
+                            -image_size.width / 2. + bounds.width / 2.,
+                            image_size.width / 2. - bounds.width / 2.,
+                        )
                     } else {
                         0.0
                     };
 
                     let y = if bounds.height < image_size.height {
-                        (state.starting_offset.y - delta.y).clamp(-hidden_height, hidden_height)
+                        (state.starting_offset.y - delta.y).clamp(
+                            -image_size.width / 2. + bounds.width / 2.,
+                            image_size.width / 2. - bounds.width / 2.,
+                        )
                     } else {
                         0.0
                     };
@@ -376,6 +383,8 @@ where
 /// The local state of a [`Viewer`].
 #[derive(Debug, Clone, Copy)]
 pub struct State {
+    /// The ratio is now in image size (absolute).
+    /// Use fit_ratio to get ratio to keep in frame.
     scale: f32,
     starting_offset: Vector,
     current_offset: Vector,
@@ -402,13 +411,15 @@ impl State {
     /// Returns the current offset of the [`State`], given the bounds
     /// of the [`Viewer`] and its image.
     fn offset(&self, bounds: Rectangle, image_size: Size) -> Vector {
-        let hidden_width = (image_size.width - bounds.width / 2.0).max(0.0).round();
-
-        let hidden_height = (image_size.height - bounds.height / 2.0).max(0.0).round();
-
         Vector::new(
-            self.current_offset.x.clamp(-hidden_width, hidden_width),
-            self.current_offset.y.clamp(-hidden_height, hidden_height),
+            self.current_offset.x.clamp(
+                (-image_size.width / 2. + bounds.width / 2.).min(0.),
+                (image_size.width / 2. - bounds.width / 2.).max(0.),
+            ),
+            self.current_offset.y.clamp(
+                (-image_size.height / 2. + bounds.height / 2.).min(0.),
+                (image_size.height / 2. - bounds.height / 2.).max(0.),
+            ),
         )
     }
 
@@ -444,6 +455,7 @@ where
 {
     let Size { width, height } = renderer.dimensions(handle);
 
+    /*
     let (width, height) = {
         let dimensions = (width as f32, height as f32);
 
@@ -459,13 +471,17 @@ where
             (dimensions.0 * scale, dimensions.1 * scale)
         }
     };
+    */
 
-    Size::new(width, height)
+    let scale = state.scale;
+    Size::new(width as f32 * scale, height as f32 * scale)
 }
 
 /// Scaling option
+#[derive(Debug, Clone, Default)]
 pub enum Scaling {
     /// Fit the view.
+    #[default]
     Fit,
     /// Scale in size of image.
     Image(f32),

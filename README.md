@@ -1,10 +1,13 @@
-# Phany
+# phany - Image Realized
 
-An image viewer.
 
 ## Roadmap
  * Metadata display
+ * RAW preview
  * Basic analysis
  * Image manager
- * GPU accelerated RAW development and edit
- * Phany over the web
+    * Read marks and tags by other software
+ * image editing
+    * GPU acceleration
+    * Scene-referred RAW development
+ * phany in browser (with HTTP based API)
