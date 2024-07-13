@@ -5,6 +5,7 @@ on:
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
+  workflow_dispatch:
 
 env:
   CARGO_TERM_COLOR: always
@@ -19,7 +20,7 @@ jobs:
     - name: Prepare
       run: |
         sudo apt update
-        sudo apt install libexiv2-dev libx11-dev
+        sudo apt install libexiv2-dev libx11-dev libgexiv2-dev
     - name: Build
       run: cargo build --verbose
     - name: Run tests
