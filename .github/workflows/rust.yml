@@ -16,6 +16,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    - name: Prepare
+      run: |
+        sudo apt update
+        sudo apt install libexiv2-dev libx11-dev
     - name: Build
       run: cargo build --verbose
     - name: Run tests
