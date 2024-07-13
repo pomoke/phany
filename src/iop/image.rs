@@ -55,8 +55,8 @@ pub struct Image<T: Pixel> {
 }
 
 pub trait ImageOp<T: Pixel, U: Pixel> {
-    const NAME: &str;
-    const DESCRIPTION: &str;
+    const NAME: &'static str;
+    const DESCRIPTION: &'static str;
 
     fn input_format() -> &'static [()];
     fn output_format() -> &'static [()];

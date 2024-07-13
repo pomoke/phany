@@ -2381,6 +2381,7 @@ dependencies = [
  "dirs",
  "iced",
  "iced_aw",
+ "log",
  "rexiv2",
  "serde",
  "thiserror",
