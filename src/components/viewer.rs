@@ -25,13 +25,14 @@ pub struct Viewer<Handle, Message> {
     filter_method: image::FilterMethod,
     move_handler: Option<Box<dyn Fn(Vector) -> Message>>,
     scale_handler: Option<Box<dyn Fn(f32) -> Message>>,
+    middle_handler: Option<Box<dyn Fn() -> Message>>,
     scale: Option<f32>,
     position: Option<Vector>,
 }
 
 impl<Handle, Message> Viewer<Handle, Message> {
     /// Creates a new [`Viewer`] with the given [`State`].
-    pub fn new(handle: Handle, scale: f32, position: Vector) -> Self {
+    pub fn new(handle: Handle) -> Self {
         Viewer {
             handle,
             padding: 0.0,
@@ -43,8 +44,9 @@ impl<Handle, Message> Viewer<Handle, Message> {
             filter_method: image::FilterMethod::default(),
             move_handler: None,
             scale_handler: None,
-            scale: Some(scale),
-            position: Some(position),
+            scale: None,
+            position: None,
+            middle_handler: None,
         }
     }
 
@@ -105,6 +107,24 @@ impl<Handle, Message> Viewer<Handle, Message> {
             self.move_handler = Some(Box::new(f));
             self
         }
+    }
+
+    /// Handler for middle.
+    pub fn on_middle(mut self, f: impl Fn() -> Message + 'static) -> Self {
+        {
+            self.middle_handler = Some(Box::new(f));
+            self
+        }
+    }
+
+    pub fn set_scale(mut self, scale: f32) -> Self {
+        self.scale = Some(scale.clamp(self.min_scale, self.max_scale));
+        self
+    }
+
+    pub fn set_offset(mut self, offset: Vector) -> Self {
+        self.position = Some(offset);
+        self
     }
 }
 
@@ -272,7 +292,10 @@ where
             }
             // Swap between fit - 100% - 200%
             Event::Mouse(mouse::Event::ButtonPressed(mouse::Button::Middle)) => {
-                event::Status::Ignored
+                if let Some(ref handler) = self.middle_handler {
+                    _shell.publish(handler());
+                }
+                event::Status::Captured
             }
             Event::Mouse(mouse::Event::CursorMoved { position }) => {
                 let state = tree.state.downcast_mut::<State>();

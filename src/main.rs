@@ -4,7 +4,7 @@ use iced::{
     font::{Family, Weight},
     Application, Settings,
 };
-use ui::ViewerUI;
+use ui::MainUI;
 
 pub mod cli;
 pub mod components;
@@ -19,7 +19,7 @@ use iced_aw::BOOTSTRAP_FONT_BYTES;
 fn main() {
     let arg = Args::parse();
 
-    ViewerUI::run(Settings {
+    MainUI::run(Settings {
         flags: arg
             .file
             .map(|x| x.to_string_lossy().into_owned())
