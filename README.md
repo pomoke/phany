@@ -12,3 +12,8 @@
     * GPU acceleration
     * Scene-referred RAW development
  * phany in browser (with HTTP based API)
+
+## License
+phany is dual-licensed under MIT license or GPL-2.0-or-later.
+
+phany uses `exiv2`, which is licensed under GPLv2 or later.
